@@ -6,11 +6,12 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { Analytics } from "@vercel/analytics/next";
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import {usePuterStore} from "~/lib/puter";
-import {useEffect} from "react";
+import { usePuterStore } from "~/lib/puter";
+import { useEffect } from "react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -45,6 +46,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <Analytics />
       </body>
     </html>
   );
