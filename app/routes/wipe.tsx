@@ -35,7 +35,7 @@ const WipeApp = () => {
     }
 
     if (error) {
-        return <div>Error {error}</div>;
+        return <div>Error: {typeof error === 'string' ? error : JSON.stringify(error)}</div>;
     }
 
     return (
