@@ -77,11 +77,11 @@ const Resume = ({ params }: Route.ComponentProps) => {
                     {feedback ? (
                         <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
                             <Summary feedback={feedback} />
-                            <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []} />
+                            <ATS score={feedback.ATS?.score || 0} suggestions={feedback.ATS?.tips || []} />
                             <Details feedback={feedback} />
                         </div>
                     ) : (
-                        <img src="/images/resume-scan-2.gif" className="w-full" />
+                        <img src="/images/resume-scan-2.gif" alt="loading_resume" className="w-full" />
                     )}
                 </section>
             </div>
