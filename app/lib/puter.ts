@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import mammoth from "mammoth";
 
 declare global {
     interface Window {
@@ -22,10 +23,10 @@ declare global {
             ai: {
                 chat: (
                     prompt: string | ChatMessage[],
-                    imageURL?: string | PuterChatOptions,
-                    testMode?: boolean,
+                    imageURL?: string | PuterChatOptions | boolean | number,
+                    testMode?: boolean | PuterChatOptions,
                     options?: PuterChatOptions
-                ) => Promise<Object>;
+                ) => Promise<any>;
                 img2txt: (
                     image: string | File | Blob,
                     testMode?: boolean
@@ -40,6 +41,36 @@ declare global {
             };
         };
     }
+}
+
+interface ChatMessage {
+    role: "user" | "assistant" | "system";
+    content: string | Array<{ type: "text"; text: string } | { type: "file"; puter_path: string }>;
+}
+
+interface PuterChatOptions {
+    model?: string;
+    stream?: boolean;
+}
+
+interface PuterUser {
+    username: string;
+}
+
+interface FSItem {
+    path: string;
+    name: string;
+}
+
+interface KVItem {
+    key: string;
+    value: string;
+}
+
+interface AIResponse {
+    message: {
+        content: string | Array<{ text: string }>;
+    };
 }
 
 interface PuterStore {
@@ -68,18 +99,20 @@ interface PuterStore {
     ai: {
         chat: (
             prompt: string | ChatMessage[],
-            imageURL?: string | PuterChatOptions,
-            testMode?: boolean,
+            imageURL?: string | PuterChatOptions | boolean | number,
+            testMode?: boolean | PuterChatOptions,
             options?: PuterChatOptions
         ) => Promise<AIResponse | undefined>;
         feedback: (
-            path: string,
-            message: string
+            pathOrText: string,
+            message: string,
+            type: "file" | "text"
         ) => Promise<AIResponse | undefined>;
         img2txt: (
             image: string | File | Blob,
             testMode?: boolean
         ) => Promise<string | undefined>;
+        extractTextFromDocx: (file: File) => Promise<string>;
     };
     kv: {
         get: (key: string) => Promise<string | null | undefined>;
@@ -312,8 +345,8 @@ export const usePuterStore = create<PuterStore>((set, get) => {
 
     const chat = async (
         prompt: string | ChatMessage[],
-        imageURL?: string | PuterChatOptions,
-        testMode?: boolean,
+        imageURL?: string | PuterChatOptions | boolean | number,
+        testMode?: boolean | PuterChatOptions,
         options?: PuterChatOptions
     ) => {
         const puter = getPuter();
@@ -321,36 +354,34 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        // return puter.ai.chat(prompt, imageURL, testMode, options);
         return puter.ai.chat(prompt, imageURL, testMode, options) as Promise<
             AIResponse | undefined
         >;
     };
 
-    const feedback = async (path: string, message: string) => {
+    const feedback = async (pathOrText: string, message: string, type: "file" | "text") => {
         const puter = getPuter();
         if (!puter) {
             setError("Puter.js not available");
             return;
         }
 
+        const content: any[] = [];
+        if (type === "file") {
+            content.push({ type: "file", puter_path: pathOrText });
+        } else {
+            content.push({ type: "text", text: pathOrText });
+        }
+        content.push({ type: "text", text: message });
+
         return puter.ai.chat(
             [
                 {
                     role: "user",
-                    content: [
-                        {
-                            type: "file",
-                            puter_path: path,
-                        },
-                        {
-                            type: "text",
-                            text: message,
-                        },
-                    ],
+                    content,
                 },
             ],
-            { model: "claude-3-7-sonnet" }
+            { model: "claude-haiku-4-5" } // Updated to faster model as requested
         ) as Promise<AIResponse | undefined>;
     };
 
@@ -362,6 +393,12 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         }
         return puter.ai.img2txt(image, testMode);
     };
+
+    const extractTextFromDocx = async (file: File): Promise<string> => {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value;
+    }
 
     const getKV = async (key: string) => {
         const puter = getPuter();
@@ -434,13 +471,14 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         ai: {
             chat: (
                 prompt: string | ChatMessage[],
-                imageURL?: string | PuterChatOptions,
-                testMode?: boolean,
+                imageURL?: string | PuterChatOptions | boolean | number,
+                testMode?: boolean | PuterChatOptions,
                 options?: PuterChatOptions
             ) => chat(prompt, imageURL, testMode, options),
-            feedback: (path: string, message: string) => feedback(path, message),
+            feedback: (pathOrText: string, message: string, type: "file" | "text" = "file") => feedback(pathOrText, message, type),
             img2txt: (image: string | File | Blob, testMode?: boolean) =>
                 img2txt(image, testMode),
+            extractTextFromDocx: (file: File) => extractTextFromDocx(file),
         },
         kv: {
             get: (key: string) => getKV(key),

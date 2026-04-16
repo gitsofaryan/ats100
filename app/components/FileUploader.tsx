@@ -9,7 +9,6 @@ interface FileUploaderProps {
 const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const file = acceptedFiles[0] || null;
-
         onFileSelect?.(file);
     }, [onFileSelect]);
 
@@ -18,13 +17,15 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
     const {getRootProps, getInputProps, isDragActive, acceptedFiles} = useDropzone({
         onDrop,
         multiple: false,
-        accept: { 'application/pdf': ['.pdf']},
+        accept: { 
+            'application/pdf': ['.pdf'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'text/plain': ['.txt']
+        },
         maxSize: maxFileSize,
     })
 
     const file = acceptedFiles[0] || null;
-
-
 
     return (
         <div className="w-full gradient-border">
@@ -34,7 +35,11 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
                 <div className="space-y-4 cursor-pointer">
                     {file ? (
                         <div className="uploader-selected-file" onClick={(e) => e.stopPropagation()}>
-                            <img src="/images/pdf.png" alt="pdf" className="size-10" />
+                            <img 
+                                src={file.name.endsWith('.pdf') ? '/images/pdf.png' : '/icons/info.svg'} 
+                                alt="file" 
+                                className="size-10 object-contain" 
+                            />
                             <div className="flex items-center space-x-3">
                                 <div>
                                     <p className="text-sm font-medium text-gray-700 truncate max-w-xs">
@@ -61,7 +66,7 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
                                     Click to upload
                                 </span> or drag and drop
                             </p>
-                            <p className="text-lg text-gray-500">PDF (max {formatSize(maxFileSize)})</p>
+                            <p className="text-lg text-gray-500">PDF, DOCX, or TXT (max {formatSize(maxFileSize)})</p>
                         </div>
                     )}
                 </div>
