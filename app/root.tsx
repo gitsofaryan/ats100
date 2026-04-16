@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { usePuterStore } from "~/lib/puter";
 import { useEffect } from "react";
+import Footer from "~/components/Footer";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,8 +42,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
         <script src="https://js.puter.com/v2/"></script>
       </head>
-      <body suppressHydrationWarning>
-        {children}
+      <body suppressHydrationWarning className="flex flex-col min-h-screen">
+        <div className="flex-grow">
+          {children}
+        </div>
+        <Footer />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -71,7 +75,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="pt-16 p-4 container mx-auto flex-grow">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (

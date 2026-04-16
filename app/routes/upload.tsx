@@ -19,6 +19,11 @@ const Upload = () => {
     }
 
     const handleAnalyze = async ({ companyName, jobTitle, jobDescription, file }: { companyName: string, jobTitle: string, jobDescription: string, file: File  }) => {
+        if (!auth.isAuthenticated) {
+            await auth.signIn();
+            return;
+        }
+
         setIsProcessing(true);
 
         try {
@@ -140,46 +145,61 @@ const Upload = () => {
                         <h2>Drop your resume (PDF, DOCX, TXT) for an ATS score and improvement tips</h2>
                     )}
                     {!isProcessing && (
-                        <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
-                            <div className="form-div">
-                                <label htmlFor="company-name">Company Name</label>
-                                <input 
-                                    type="text" 
-                                    name="company-name" 
-                                    placeholder="e.g., Google, Tesla, Stripe…" 
-                                    id="company-name" 
-                                    autoComplete="organization"
-                                />
-                            </div>
-                            <div className="form-div">
-                                <label htmlFor="job-title">Job Title</label>
-                                <input 
-                                    type="text" 
-                                    name="job-title" 
-                                    placeholder="e.g., Software Engineer, Product Manager…" 
-                                    id="job-title" 
-                                    autoComplete="organization-title"
-                                />
-                            </div>
-                            <div className="form-div">
-                                <label htmlFor="job-description">Job Description</label>
-                                <textarea 
-                                    rows={5} 
-                                    name="job-description" 
-                                    placeholder="Describe the role and key requirements…" 
-                                    id="job-description" 
-                                />
-                            </div>
+                        <div className="w-full max-w-4xl mt-8">
+                            {!auth.isAuthenticated ? (
+                                <div className="gradient-border p-12 text-center flex flex-col items-center gap-6">
+                                    <h2 className="!text-black">Please sign in to analyze your resume</h2>
+                                    <p className="text-gray-500 max-w-md">Your resume and feedback will be securely saved to your personal Puter account.</p>
+                                    <button 
+                                        onClick={() => auth.signIn()} 
+                                        className="primary-button w-fit px-12 text-xl font-semibold"
+                                    >
+                                        Sign In with Puter
+                                    </button>
+                                </div>
+                            ) : (
+                                <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+                                    <div className="form-div">
+                                        <label htmlFor="company-name">Company Name</label>
+                                        <input 
+                                            type="text" 
+                                            name="company-name" 
+                                            placeholder="e.g., Google, Tesla, Stripe…" 
+                                            id="company-name" 
+                                            autoComplete="organization"
+                                        />
+                                    </div>
+                                    <div className="form-div">
+                                        <label htmlFor="job-title">Job Title</label>
+                                        <input 
+                                            type="text" 
+                                            name="job-title" 
+                                            placeholder="e.g., Software Engineer, Product Manager…" 
+                                            id="job-title" 
+                                            autoComplete="organization-title"
+                                        />
+                                    </div>
+                                    <div className="form-div">
+                                        <label htmlFor="job-description">Job Description</label>
+                                        <textarea 
+                                            rows={5} 
+                                            name="job-description" 
+                                            placeholder="Describe the role and key requirements…" 
+                                            id="job-description" 
+                                        />
+                                    </div>
 
-                            <div className="form-div">
-                                <label htmlFor="uploader">Upload Resume</label>
-                                <FileUploader onFileSelect={handleFileSelect} />
-                            </div>
+                                    <div className="form-div">
+                                        <label htmlFor="uploader">Upload Resume</label>
+                                        <FileUploader onFileSelect={handleFileSelect} />
+                                    </div>
 
-                            <button className="primary-button" type="submit">
-                                Start Analysis Report
-                            </button>
-                        </form>
+                                    <button className="primary-button" type="submit">
+                                        Start Analysis Report
+                                    </button>
+                                </form>
+                            )}
+                        </div>
                     )}
                 </div>
             </section>
