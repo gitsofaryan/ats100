@@ -16,6 +16,8 @@ const Navbar = () => {
                     <img 
                         src="https://github.com/gitsofaryan.png" 
                         alt="gitsofaryan profile"
+                        width={24}
+                        height={24}
                         className="w-6 h-6 rounded-full border border-gray-200"
                     />
                     Developer: @gitsofaryan
@@ -26,7 +28,7 @@ const Navbar = () => {
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 text-sm font-medium text-gray-700"
                 >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path fillRule="evenodd" d="M10 2L13.09 8.26L20 9L15 13.74L16.18 20.02L10 16.77L3.82 20.02L5 13.74L0 9L6.91 8.26L10 2Z" clipRule="evenodd" />
                     </svg>
                     Star on GitHub

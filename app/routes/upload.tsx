@@ -29,40 +29,41 @@ const Upload = () => {
 
             // Handle based on file type
             if (ext === 'pdf') {
-                setStatusText('Uploading PDF...');
+                setStatusText('Uploading PDF…');
                 const uploadedFile = await fs.upload([file]);
                 const fileItem = Array.isArray(uploadedFile) ? uploadedFile[0] : uploadedFile;
                 if (!fileItem || !fileItem.path) throw new Error('Failed to upload file');
                 resumePath = fileItem.path;
 
-                setStatusText('Converting to image (Faster AI processing)...');
+                setStatusText('Converting to image (Faster AI processing)…');
                 const imageResult = await convertPdfToImage(file);
                 if (imageResult.file) {
+                    setStatusText('Uploading the image…');
                     const uploadedImage = await fs.upload([imageResult.file]);
                     const imageItem = Array.isArray(uploadedImage) ? uploadedImage[0] : uploadedImage;
                     if(imageItem?.path) imagePath = imageItem.path;
                 }
 
-                setStatusText('Analyzing PDF (Claude Haiku)...');
+                setStatusText('Analyzing PDF (Claude Haiku)…');
                 feedbackResponse = await ai.feedback(resumePath, prepareInstructions({ jobTitle, jobDescription }), "file");
             } 
             else if (ext === 'docx' || ext === 'txt') {
                 let text = '';
                 if (ext === 'docx') {
-                    setStatusText('Extracting text from DOCX...');
+                    setStatusText('Extracting text from DOCX…');
                     text = await ai.extractTextFromDocx(file);
                 } else {
-                    setStatusText('Reading text file...');
+                    setStatusText('Reading text file…');
                     text = await file.text();
                 }
 
                 // Still upload the original file for the user profile view
-                setStatusText('Uploading original document...');
+                setStatusText('Uploading original document…');
                 const uploadedFile = await fs.upload([file]);
                 const fileItem = Array.isArray(uploadedFile) ? uploadedFile[0] : uploadedFile;
                 if (fileItem?.path) resumePath = fileItem.path;
 
-                setStatusText('Analyzing text (Claude Haiku)...');
+                setStatusText('Analyzing text (Claude Haiku)…');
                 feedbackResponse = await ai.feedback(text, prepareInstructions({ jobTitle, jobDescription }), "text");
             } else {
                 throw new Error('Unsupported file format');
@@ -95,10 +96,10 @@ const Upload = () => {
                 feedback: JSON.parse(cleanJson),
             }
 
-            setStatusText('Saving results...');
+            setStatusText('Saving results…');
             await kv.set(`resume:${data.id}`, JSON.stringify(data));
             
-            setStatusText('Complete! Redirecting...');
+            setStatusText('Complete! Redirecting…');
             navigate(`/resume/${data.id}`);
 
         } catch (err: any) {
@@ -129,11 +130,11 @@ const Upload = () => {
 
             <section className="main-section">
                 <div className="page-heading py-16">
-                    <h1>Smart feedback for your dream job</h1>
+                    <h1 className="text-pretty">Smart feedback for your dream job</h1>
                     {isProcessing ? (
                         <>
                             <h2 className="animate-pulse">{statusText}</h2>
-                            <img src="/images/resume-scan.gif" className="w-full" />
+                            <img src="/images/resume-scan.gif" className="w-full" width={400} height={300} />
                         </>
                     ) : (
                         <h2>Drop your resume (PDF, DOCX, TXT) for an ATS score and improvement tips</h2>
@@ -142,15 +143,32 @@ const Upload = () => {
                         <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">
                             <div className="form-div">
                                 <label htmlFor="company-name">Company Name</label>
-                                <input type="text" name="company-name" placeholder="Company Name" id="company-name" />
+                                <input 
+                                    type="text" 
+                                    name="company-name" 
+                                    placeholder="e.g., Google, Tesla, Stripe…" 
+                                    id="company-name" 
+                                    autoComplete="organization"
+                                />
                             </div>
                             <div className="form-div">
                                 <label htmlFor="job-title">Job Title</label>
-                                <input type="text" name="job-title" placeholder="Job Title" id="job-title" />
+                                <input 
+                                    type="text" 
+                                    name="job-title" 
+                                    placeholder="e.g., Software Engineer, Product Manager…" 
+                                    id="job-title" 
+                                    autoComplete="organization-title"
+                                />
                             </div>
                             <div className="form-div">
                                 <label htmlFor="job-description">Job Description</label>
-                                <textarea rows={5} name="job-description" placeholder="Job Description" id="job-description" />
+                                <textarea 
+                                    rows={5} 
+                                    name="job-description" 
+                                    placeholder="Describe the role and key requirements…" 
+                                    id="job-description" 
+                                />
                             </div>
 
                             <div className="form-div">
@@ -159,7 +177,7 @@ const Upload = () => {
                             </div>
 
                             <button className="primary-button" type="submit">
-                                Analyze Resume
+                                Start Analysis Report
                             </button>
                         </form>
                     )}
