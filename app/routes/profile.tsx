@@ -5,7 +5,7 @@ import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
 import { usePuterStore } from "~/lib/puter";
 import { getUserProfile, saveUserProfile, type UserProfile } from "~/lib/profile";
-import { formatDate, getInitials } from "~/lib/utils";
+import { formatDate, getInitials, cn } from "~/lib/utils";
 import { normalizeFeedbackScores } from "~/lib/scoring";
 
 export const meta = () => ([
@@ -36,6 +36,7 @@ const Profile = () => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarUrl, setAvatarUrl] = useState("");
     const [avatarUploading, setAvatarUploading] = useState(false);
+    const [isWiping, setIsWiping] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
@@ -159,27 +160,51 @@ const Profile = () => {
 
         if (confirmation === "WIPE") {
             try {
-                const files = await fs.readDir("./");
-                if (files) {
-                    for (const file of files) {
+                setIsWiping(true);
+                
+                // 1. Delete all storage files
+                const files = (await fs.readDir("./")) || [];
+                for (const file of files) {
+                    try {
                         await fs.delete(file.path);
+                    } catch (e) {
+                        console.warn(`Failed to delete file ${file.path}:`, e);
                     }
                 }
 
-                await kv.flush();
+                // 2. Clear known app prefixes specifically
+                const patterns = ["resume:*", "profile:*", "billing:*", "usage:*", "stats:*"];
+                for (const pattern of patterns) {
+                    try {
+                        const keys = (await kv.list(pattern)) || [];
+                        for (const key of keys) {
+                            await kv.delete(key);
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to clear pattern ${pattern}:`, e);
+                    }
+                }
+
+                // 3. Global flush for any stray keys
+                try {
+                    await kv.flush();
+                } catch (e) {
+                    console.warn(`KV flush failed:`, e);
+                }
 
                 ui.notify({
-                    title: "Data Wiped",
-                    text: "Your account data has been successfully cleared.",
+                    title: "System Reset",
+                    text: "All account data has been completely cleared.",
                     icon: "success"
                 });
 
-                setResumes([]);
-                setProfile(null);
-                setAvatarUrl("");
+                // Force a full reload to clear all memory states
+                setTimeout(() => window.location.assign("/"), 1500);
             } catch (err) {
                 console.error("Wipe failed:", err);
-                ui.alert("Maintenance Error", "Failed to clear all data. Please try again.");
+                ui.alert("Maintenance Error", "Failed to clear all data. Please try refreshing and trying again.");
+            } finally {
+                setIsWiping(false);
             }
         } else if (confirmation) {
             ui.notify("Wipe canceled. Confirmation code did not match.");
@@ -305,9 +330,13 @@ const Profile = () => {
                         </div>
                         <button
                             onClick={handleWipeData}
-                            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full font-bold transition-colors shadow-lg shadow-red-200"
+                            disabled={isWiping}
+                            className={cn(
+                                "px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full font-bold transition-colors shadow-lg shadow-red-200",
+                                isWiping && "opacity-50 cursor-not-allowed"
+                            )}
                         >
-                            Wipe All Data
+                            {isWiping ? "Wiping Data..." : "Wipe All Data"}
                         </button>
                     </div>
                 </div>

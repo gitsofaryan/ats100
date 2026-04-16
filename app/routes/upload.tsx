@@ -3,7 +3,7 @@ import Navbar from "~/components/Navbar";
 import FileUploader from "~/components/FileUploader";
 import { usePuterStore } from "~/lib/puter";
 import { useNavigate } from "react-router";
-import { convertPdfToImage } from "~/lib/pdf2img";
+import { convertPdfToImage, extractTextFromPdf } from "~/lib/pdf2img";
 import { generateUUID } from "~/lib/utils";
 import { prepareInstructions } from "../../constants";
 import { canRunAnalysis, recordAnalysisUsage } from "~/lib/billing";
@@ -68,8 +68,11 @@ const Upload = () => {
                     if (imageItem?.path) imagePath = imageItem.path;
                 }
 
+                setStatusText("Extracting semantic data...");
+                const text = await extractTextFromPdf(file);
+
                 setStatusText("Running ATS and role-fit analysis...");
-                feedbackResponse = await ai.feedback(resumePath, prepareInstructions({ jobTitle, jobDescription }), "file");
+                feedbackResponse = await ai.feedback(text, prepareInstructions({ jobTitle, jobDescription }), "text");
             } else if (ext === "docx" || ext === "txt") {
                 let text = "";
 
