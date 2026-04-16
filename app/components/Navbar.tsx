@@ -1,14 +1,28 @@
 import { Link } from "react-router";
 import { usePuterStore } from "~/lib/puter";
+import { useEffect, useRef } from "react";
 
 const Navbar = () => {
-    const { auth, puterReady } = usePuterStore();
+    const { auth, ui, puterReady } = usePuterStore();
+    const prevAuthRef = useRef(auth.isAuthenticated);
+
+    useEffect(() => {
+        if (auth.isAuthenticated && !prevAuthRef.current) {
+            ui.notify({
+                title: "Signed In",
+                text: `Welcome back, ${auth.user?.username}!`,
+                icon: "success"
+            });
+        }
+        prevAuthRef.current = auth.isAuthenticated;
+    }, [auth.isAuthenticated, auth.user, ui]);
 
     const handleSignIn = async () => {
         try {
             await auth.signIn();
         } catch (err) {
             console.error("Sign in failed:", err);
+            ui.alert("Sign In Failed", "Please try again to access your account.");
         }
     }
 

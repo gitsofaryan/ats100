@@ -8,7 +8,7 @@ import {generateUUID} from "~/lib/utils";
 import {prepareInstructions} from "../../constants";
 
 const Upload = () => {
-    const { auth, isLoading, fs, ai, kv, puterReady } = usePuterStore();
+    const { auth, isLoading, fs, ai, kv, ui, puterReady } = usePuterStore();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusText, setStatusText] = useState('');
@@ -105,11 +105,20 @@ const Upload = () => {
             await kv.set(`resume:${data.id}`, JSON.stringify(data));
             
             setStatusText('Complete! Redirecting…');
+            
+            ui.notify({
+                title: "Resume Analyzed!",
+                text: `Score: ${data.feedback.overallScore}/100.`,
+                icon: "success"
+            });
+
             navigate(`/resume/${data.id}`);
 
         } catch (err: any) {
             console.error(err);
-            setStatusText(`Error: ${err.message || 'Processing failed'}`);
+            const msg = err.message || 'Processing failed';
+            setStatusText(`Error: ${msg}`);
+            ui.alert("Analysis Error", msg);
             setIsProcessing(false);
         }
     }

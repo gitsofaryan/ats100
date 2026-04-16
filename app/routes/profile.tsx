@@ -21,10 +21,24 @@ const StatCard = ({ title, value, subtext, trend }: { title: string, value: stri
 )
 
 const Profile = () => {
-    const { auth, kv, puterReady, isLoading } = usePuterStore();
+    const { auth, kv, fs, ui, puterReady, isLoading } = usePuterStore();
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loadingResumes, setLoadingResumes] = useState(false);
     const navigate = useNavigate();
+
+    const loadResumes = async () => {
+        if (!auth.isAuthenticated) return;
+        setLoadingResumes(true);
+        try {
+            const items = (await kv.list('resume:*', true)) as KVItem[];
+            const parsedResumes = items?.map((item) => JSON.parse(item.value) as Resume);
+            setResumes(parsedResumes || []);
+        } catch (err) {
+            console.error("Failed to load resumes:", err);
+        } finally {
+            setLoadingResumes(false);
+        }
+    }
 
     useEffect(() => {
         if (!isLoading && !auth.isAuthenticated) {
@@ -33,20 +47,6 @@ const Profile = () => {
     }, [auth.isAuthenticated, isLoading]);
 
     useEffect(() => {
-        const loadResumes = async () => {
-            if (!auth.isAuthenticated) return;
-            setLoadingResumes(true);
-            try {
-                const items = (await kv.list('resume:*', true)) as KVItem[];
-                const parsedResumes = items?.map((item) => JSON.parse(item.value) as Resume);
-                setResumes(parsedResumes || []);
-            } catch (err) {
-                console.error("Failed to load resumes:", err);
-            } finally {
-                setLoadingResumes(false);
-            }
-        }
-
         if (puterReady) {
             loadResumes();
         }
@@ -55,6 +55,39 @@ const Profile = () => {
     const averageScore = resumes.length > 0 
         ? Math.round(resumes.reduce((acc, curr) => acc + (curr.feedback.overallScore || 0), 0) / resumes.length)
         : 0;
+
+    const handleWipeData = async () => {
+        const confirmation = await ui.prompt("Wipe All Data?", "Type 'WIPE' to confirm deletion of all resumes and analysis reports. This cannot be undone.");
+        
+        if (confirmation === 'WIPE') {
+            try {
+                // Delete all files in root (resumes and images)
+                const files = await fs.readDir("./");
+                if (files) {
+                    for (const file of files) {
+                        await fs.delete(file.path);
+                    }
+                }
+                
+                // Flush all KV data (resumes metadata)
+                await kv.flush();
+                
+                ui.notify({
+                    title: "Data Wiped",
+                    text: "Your account data has been successfully cleared.",
+                    icon: "success"
+                });
+                
+                // Reload state
+                setResumes([]);
+            } catch (err) {
+                console.error("Wipe failed:", err);
+                ui.alert("Maintenance Error", "Failed to clear all data. Please try again.");
+            }
+        } else if (confirmation) {
+            ui.notify("Wipe canceled. Confirmation code did not match.");
+        }
+    }
 
     return (
         <main className="bg-[url('/images/bg-main.svg')] bg-cover min-h-screen flex flex-col">
@@ -88,7 +121,7 @@ const Profile = () => {
                     </div>
 
                     {/* RESUME GRID */}
-                    <div className="mb-20">
+                    <div className="mb-32">
                         <h2 className="text-3xl font-bold mb-8 flex items-center gap-3 !text-black">
                             <img src="/icons/info.svg" className="size-8" alt="history" />
                             Analysis History
@@ -116,6 +149,23 @@ const Profile = () => {
                                 )}
                             </>
                         )}
+                    </div>
+
+                    {/* MAINTENANCE SECTION */}
+                    <div className="mb-20 pt-12 border-t border-gray-200">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">Account Maintenance</h3>
+                        <div className="bg-red-50/50 rounded-2xl p-6 border border-red-100 flex items-center justify-between max-sm:flex-col max-sm:items-start gap-4">
+                            <div>
+                                <h4 className="font-bold text-red-900">Reset Application Data</h4>
+                                <p className="text-red-700/70 text-sm">Delete all historical resumes, images, and AI analysis reports from your Puter account.</p>
+                            </div>
+                            <button 
+                                onClick={handleWipeData}
+                                className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full font-bold transition-colors shadow-lg shadow-red-200"
+                            >
+                                Wipe All Data
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>

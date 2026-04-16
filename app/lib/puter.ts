@@ -39,6 +39,14 @@ declare global {
                 list: (pattern: string, returnValues?: boolean) => Promise<string[]>;
                 flush: () => Promise<boolean>;
             };
+            ui: {
+                alert: (title: string, text?: string) => Promise<void>;
+                notify: (options: string | { title: string, text?: string, icon?: string }) => void;
+                showSpinner: () => void;
+                hideSpinner: () => void;
+                prompt: (title: string, text?: string) => Promise<string>;
+                showOpenFilePicker: () => Promise<any>;
+            };
         };
     }
 }
@@ -123,6 +131,14 @@ interface PuterStore {
             returnValues?: boolean
         ) => Promise<string[] | KVItem[] | undefined>;
         flush: () => Promise<boolean | undefined>;
+    };
+    ui: {
+        alert: (title: string, text?: string) => Promise<void>;
+        notify: (options: string | { title: string, text?: string, icon?: string }) => void;
+        showSpinner: () => void;
+        hideSpinner: () => void;
+        prompt: (title: string, text?: string) => Promise<string | undefined>;
+        showOpenFilePicker: () => Promise<any>;
     };
 
     init: () => void;
@@ -448,6 +464,42 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         return puter.kv.flush();
     };
 
+    const alert = async (title: string, text?: string) => {
+        const puter = getPuter();
+        if (!puter) return;
+        return puter.ui.alert(title, text);
+    }
+
+    const notify = (options: string | { title: string, text?: string, icon?: string }) => {
+        const puter = getPuter();
+        if (!puter) return;
+        return puter.ui.notify(options);
+    }
+
+    const showSpinner = () => {
+        const puter = getPuter();
+        if (!puter) return;
+        return puter.ui.showSpinner();
+    }
+
+    const hideSpinner = () => {
+        const puter = getPuter();
+        if (!puter) return;
+        return puter.ui.hideSpinner();
+    }
+
+    const prompt = async (title: string, text?: string) => {
+        const puter = getPuter();
+        if (!puter) return;
+        return puter.ui.prompt(title, text);
+    }
+
+    const showOpenFilePicker = async () => {
+        const puter = getPuter();
+        if (!puter) return;
+        return puter.ui.showOpenFilePicker();
+    }
+
     return {
         isLoading: true,
         error: null,
@@ -487,6 +539,14 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             list: (pattern: string, returnValues?: boolean) =>
                 listKV(pattern, returnValues),
             flush: () => flushKV(),
+        },
+        ui: {
+            alert,
+            notify,
+            showSpinner,
+            hideSpinner,
+            prompt,
+            showOpenFilePicker,
         },
         init,
         clearError: () => set({ error: null }),
