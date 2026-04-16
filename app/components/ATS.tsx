@@ -1,4 +1,5 @@
-import React from 'react'
+import React from "react";
+import { cn } from "~/lib/utils";
 
 interface Suggestion {
   type: "good" | "improve";
@@ -11,69 +12,75 @@ interface ATSProps {
 }
 
 const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
-  // Determine background gradient based on score
-  const gradientClass = score > 69
-    ? 'from-green-100'
-    : score > 49
-      ? 'from-yellow-100'
-      : 'from-red-100';
+  const tone = score > 69 ? "good" : score > 49 ? "average" : "poor";
+  
+  const accentColor = tone === "good" 
+    ? "text-green-600" 
+    : tone === "average" 
+      ? "text-amber-600" 
+      : "text-red-600";
 
-  // Determine icon based on score
-  const iconSrc = score > 69
-    ? '/icons/ats-good.svg'
-    : score > 49
-      ? '/icons/ats-warning.svg'
-      : '/icons/ats-bad.svg';
-
-  // Determine subtitle based on score
-  const subtitle = score > 69
-    ? 'Great Job!'
-    : score > 49
-      ? 'Good Start'
-      : 'Needs Improvement';
+  const statusLabel = tone === "good" 
+    ? "ATS Compatible" 
+    : tone === "average" 
+      ? "Partial Match" 
+      : "High Filter Risk";
 
   return (
-    <div className={`bg-gradient-to-b ${gradientClass} to-white rounded-2xl shadow-md w-full p-6`}>
-      {/* Top section with icon and headline */}
-      <div className="flex items-center gap-4 mb-6">
-        <img src={iconSrc} alt="ATS Score Icon" width={48} height={48} className="w-12 h-12" />
-        <div>
-          <h2 className="text-2xl font-bold">ATS Score - {score}/100</h2>
+    <div className="report-shell">
+      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-4">
+          <span className={cn("eyebrow w-fit capitalize", accentColor)}>
+            {statusLabel}
+          </span>
+          <h2 className="text-4xl font-bold !text-black">ATS Readiness Analysis</h2>
+          <p className="max-w-xl text-lg text-gray-600 leading-relaxed">
+            Applicant Tracking Systems use specific parsing algorithms to rank your relevance. This score measures how effectively your structure and keywords align with these automated screeners.
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center p-8 rounded-[40px] bg-gradient-to-br from-white to-[#f7f8ff] border border-white/80 shadow-inner min-w-[180px]">
+          <span className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-1">Score</span>
+          <span className={cn("text-6xl font-black", accentColor)}>{score}</span>
+          <span className="text-sm font-semibold text-gray-500 mt-1">out of 100</span>
         </div>
       </div>
 
-      {/* Description section */}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-2">{subtitle}</h3>
-        <p className="text-gray-600 mb-4">
-          This score represents how well your resume is likely to perform in Applicant Tracking Systems used by employers.
-        </p>
-
-        {/* Suggestions list */}
-        <div className="space-y-3">
-          {suggestions.map((suggestion, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <img
-                src={suggestion.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"}
-                alt={suggestion.type === "good" ? "Check" : "Warning"}
-                width={20}
-                height={20}
-                className="w-5 h-5 mt-1"
-              />
-              <p className={suggestion.type === "good" ? "text-green-700" : "text-amber-700"}>
-                {suggestion.tip}
-              </p>
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {suggestions.map((suggestion, index) => (
+          <div 
+            key={index} 
+            className={cn(
+              suggestion.type === "good" ? "tip-card-good" : "tip-card-improve"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "size-8 rounded-full flex items-center justify-center shadow-sm",
+                suggestion.type === "good" ? "bg-white" : "bg-white"
+              )}>
+                <img
+                  src={suggestion.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"}
+                  alt={suggestion.type === "good" ? "Success" : "Warning"}
+                  className="size-4"
+                />
+              </div>
+              <p className="font-semibold text-lg">{suggestion.type === "good" ? "Strength" : "Improvement"}</p>
             </div>
-          ))}
-        </div>
+            <p className="text-base leading-relaxed mt-1 opacity-90">
+              {suggestion.tip}
+            </p>
+          </div>
+        ))}
       </div>
 
-      {/* Closing encouragement */}
-      <p className="text-gray-700 italic">
-        Keep refining your resume to improve your chances of getting past ATS filters and into the hands of recruiters.
-      </p>
+      <div className="mt-8 p-6 rounded-3xl bg-[#f7f8ff]/50 border border-dashed border-gray-200">
+        <p className="text-gray-600 italic text-center">
+            "Keep refining your resume until both ATS compatibility and role alignment improve. Modern hiring systems prioritize context and impact over simple keyword stuffing."
+        </p>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default ATS
+export default ATS;

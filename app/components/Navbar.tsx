@@ -24,7 +24,7 @@ const Navbar = () => {
             console.error("Sign in failed:", err);
             ui.alert("Sign In Failed", "Please try again to access your account.");
         }
-    }
+    };
 
     return (
         <nav className="navbar">
@@ -41,21 +41,22 @@ const Navbar = () => {
                                     <span>Profile</span>
                                 </Link>
                                 <Link to="/upload" className="primary-button w-fit px-8">
-                                    Upload Resume
+                                    Analyze Resume
                                 </Link>
                             </div>
                         ) : (
-                            <button 
+                            <button
                                 onClick={handleSignIn}
                                 className="primary-button w-fit px-8"
                             >
-                                Sign In
+                                Analyze Resume
                             </button>
                         )}
                     </>
                 )}
             </div>
         </nav>
-    )
-}
-export default Navbar
+    );
+};
+
+export default Navbar;

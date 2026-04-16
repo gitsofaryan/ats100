@@ -20,3 +20,27 @@ export function formatSize(bytes: number): string {
 
 export const generateUUID = () => crypto.randomUUID();
 
+export const formatDate = (value?: string) => {
+  if (!value) return "Recently";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recently";
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+};
+
+export const getInitials = (value?: string) => {
+  if (!value) return "U";
+
+  return value
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "U";
+};
+
