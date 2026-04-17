@@ -2,6 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { usePuterStore } from "~/lib/puter";
 
+export const meta = () => [
+  { title: "System Wipe | ATS100" },
+  { name: "robots", content: "noindex, nofollow" },
+];
+
+
 const WipeApp = () => {
     const { auth, isLoading, error, fs, ui, wipeData } = usePuterStore();
     const navigate = useNavigate();

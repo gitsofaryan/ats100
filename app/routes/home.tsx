@@ -5,9 +5,9 @@ import { Link } from "react-router";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "ATS100 | Free AI Resume Analyzer & ATS Scanner" },
-    { name: "description", content: "Optimize your resume with ATS100. Get free AI-powered feedback, bypass ATS filters, and land more interviews. The raw, honest truth about your resume." },
-    { name: "keywords", content: "ATS scanner, resume analyzer, free ATS check, AI resume builder, bypass applicant tracking system, resume feedback, job application help" },
+    { title: "Free ATS Resume Scanner | ATS100 AI Resume Analyzer" },
+    { name: "description", content: "Check your ATS score for free. ATS100 is an AI-powered resume analyzer that helps you bypass hiring filters and land more interviews. Not a study guide—a job landing machine." },
+    { name: "keywords", content: "ATS scanner, free ATS 100, resume analyzer, AI resume check, bypass recruitment software, hiring manager feedback, job seeker tools" },
     
     // Open Graph / Facebook
     { property: "og:type", content: "website" },
@@ -85,7 +85,8 @@ export default function Home() {
     "@type": "SoftwareApplication",
     "name": "ATS100",
     "operatingSystem": "Web",
-    "applicationCategory": "CareerApplication",
+    "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "Human Resources / Resume Analysis",
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.9",
@@ -127,6 +128,14 @@ export default function Home() {
           "@type": "Answer",
           "text": "Our tool provides a detailed breakdown of keyword matching, impact metrics, and structural fixes that specifically target ATS scoring algorithms."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "Is ATS100 a study guide for Astronomy (AST 100)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. ATS100 stands for Applicant Tracking System 100%. We are a professional AI tool designed to help job seekers optimize their resumes for recruitment software."
+        }
       }
     ]
   };
@@ -149,13 +158,13 @@ export default function Home() {
             <span className="eyebrow">Stop sending resumes into the void</span>
 
             <h1 className="text-pretty max-w-5xl leading-[1.02] tracking-tighter">
-              Stop Getting Ghosted.
+              Bypass the <span className="text-[#606beb]">ATS 100%</span>
               <br />
-              <span className="text-[#606beb]">Start Getting Hired.</span>
+              of the Time.
             </h1>
 
             <p className="text-xl text-gray-700 font-medium leading-relaxed">
-              Applying for jobs shouldn't feel like a guessing game. We show you exactly how hiring managers and AI filters read your resume, so you can fix it before you hit apply.
+              Don't let recruiters miss your profile. ATS100 is the free AI resume scanner that shows you exactly how applicant tracking systems read your resume, so you can fix it before you hit apply.
             </p>
 
             <p className="text-lg text-gray-500 leading-relaxed">
@@ -396,6 +405,12 @@ export default function Home() {
               <h3 className="text-xl font-bold text-gray-900 mb-4">How can I rank higher in ATS scanning?</h3>
               <p className="text-gray-600 leading-relaxed font-medium">
                 Our tool provides a detailed breakdown of keyword matching, impact metrics, and structural fixes that specifically target ATS scoring algorithms.
+              </p>
+            </div>
+            <div className="dashboard-card !p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Is ATS100 a study guide for Astronomy (AST 100)?</h3>
+              <p className="text-gray-600 leading-relaxed font-medium">
+                No. ATS100 stands for <strong>Applicant Tracking System 100%</strong>. We are a professional AI tool designed to help job seekers optimize their resumes for recruitment software, not a curriculum study guide.
               </p>
             </div>
           </div>

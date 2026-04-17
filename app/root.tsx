@@ -14,6 +14,14 @@ import { useEffect } from "react";
 import Footer from "~/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 
+export const meta: Route.MetaFunction = () => [
+  { title: "ATS100 | AI Resume Analyzer & ATS Scanner" },
+  { name: "description", content: "Free AI-powered resume analyzer to bypass ATS filters and land more interviews." },
+  { property: "og:site_name", content: "ATS100" },
+  { property: "og:locale", content: "en_US" },
+];
+
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

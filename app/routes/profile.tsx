@@ -9,8 +9,10 @@ import { formatDate, getInitials, cn } from "~/lib/utils";
 import { normalizeFeedbackScores } from "~/lib/scoring";
 
 export const meta = () => ([
-    { title: "ATS100 | Saved Resume Reports" },
-    { name: "description", content: "Track report history, ATS scores, and resume progress over time." },
+    { title: "User Profile | ATS100 Resume Scan History" },
+    { name: "description", content: "View your saved AI resume analysis reports, track your ATS screening improvements, and manage your professional profile." },
+    { name: "keywords", content: "resume scan history, ATS screening results, resume analysis dashboard, career progress tracker" },
+    { name: "robots", content: "noindex, nofollow" },
 ]);
 
 const StatCard = ({
