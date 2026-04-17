@@ -11,8 +11,9 @@ import { extractTextFromPdf } from "~/lib/pdf2img";
 import { prepareInstructions } from "../../constants";
 
 export const meta = () => ([
-    { title: "ATS100 | Resume Analysis Report" },
-    { name: "description", content: "Detailed ATS readiness, role-fit, and resume quality assessment." },
+    { title: "Your Resume Report | ATS100 Optimizer" },
+    { name: "description", content: "Comprehensive ATS score, keyword audit, and hiring manager feedback for your resume." },
+    { name: "robots", content: "noindex, follow" },
 ]);
 
 const Resume = ({ params }: Route.ComponentProps) => {

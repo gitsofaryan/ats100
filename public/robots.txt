@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /wipe
+Disallow: /profile
+Disallow: /upload
+
+Sitemap: https://ats100x.vercel.app/sitemap.xml

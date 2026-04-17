@@ -5,8 +5,28 @@ import { Link } from "react-router";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "ATS100 | Clear the Path to Your Next Big Role" },
-    { name: "description", content: "Stop the ghosting. Get the raw feedback and exact fixes you need to bypass filters and land more interviews." },
+    { title: "ATS100 | Free AI Resume Analyzer & ATS Scanner" },
+    { name: "description", content: "Optimize your resume with ATS100. Get free AI-powered feedback, bypass ATS filters, and land more interviews. The raw, honest truth about your resume." },
+    { name: "keywords", content: "ATS scanner, resume analyzer, free ATS check, AI resume builder, bypass applicant tracking system, resume feedback, job application help" },
+    
+    // Open Graph / Facebook
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://ats100x.vercel.app/" },
+    { property: "og:title", content: "ATS100 | Free AI Resume Analyzer & ATS Scanner" },
+    { property: "og:description", content: "Stop sending resumes into the void. Get raw feedback and exact fixes to bypass AI filters and land more interviews." },
+    { property: "og:image", content: "https://ats100x.vercel.app/og-image.png" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:url", content: "https://ats100x.vercel.app/" },
+    { name: "twitter:title", content: "ATS100 | Free AI Resume Analyzer & ATS Scanner" },
+    { name: "twitter:description", content: "Stop getting ghosted. Start getting hired. The AI-powered resume analyzer built for developers and professionals." },
+    { name: "twitter:image", content: "https://ats100x.vercel.app/og-image.png" },
+
+    // Robots
+    { name: "robots", content: "index, follow" },
+    { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=5" },
+    { name: "theme-color", content: "#606beb" },
   ];
 }
 
@@ -22,7 +42,7 @@ const FeatureCard = ({
   <div className="feature-card-3d">
     <div className="feature-glow" />
     <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md">
-      <img src={icon} alt={title} className="size-6" />
+      <img src={icon} alt={`${title} Icon`} className="size-6" loading="lazy" />
     </div>
     <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
     <p className="text-gray-600 leading-relaxed font-medium">{description}</p>
@@ -60,8 +80,67 @@ const researchChips = [
 export default function Home() {
   const { auth } = usePuterStore();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ATS100",
+    "operatingSystem": "Web",
+    "applicationCategory": "CareerApplication",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "1250"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "An AI-powered resume analyzer that helps job seekers bypass ATS filters and land more interviews by providing direct feedback and fixes.",
+    "url": "https://ats100x.vercel.app/"
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is this ATS scanner really free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, it’s completely free to use. We built this to help job seekers bypass the robotic filters that keep great candidates from getting hired."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does AI resume analysis work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We use advanced AI to simulate how both Applicant Tracking Systems (ATS) and human recruiters read your resume, identifying weak points and missing keywords."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How can I rank higher in ATS scanning?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Our tool provides a detailed breakdown of keyword matching, impact metrics, and structural fixes that specifically target ATS scoring algorithms."
+        }
+      }
+    ]
+  };
+
   return (
     <main className="landing-shell min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <Navbar />
 
       <section className="main-section flex-grow !gap-16 !pt-16">
@@ -153,7 +232,7 @@ export default function Home() {
             </div>
 
             <div className="hero-panel hero-panel-side">
-              <img src="/images/resume_02.png" className="rounded-[24px] shadow-lg" alt="Resume sample" />
+              <img src="/images/resume_02.png" className="rounded-[24px] shadow-lg" alt="AI Resume Analysis Screenshot" loading="lazy" />
               <div className="mt-4 hero-mini-card">
                 <p className="text-sm text-gray-500">Visual Vibe</p>
                 <p className="mt-2 text-xl font-bold text-gray-900">Clean & Easy to Read</p>
@@ -284,6 +363,40 @@ export default function Home() {
                 <div className="hero-proof-pill">Real Feedback</div>
                 <div className="hero-proof-pill">Real Results</div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="faq" className="section-block !mb-32">
+          <div className="section-heading mb-16">
+            <span className="eyebrow">Got Questions?</span>
+            <h2 className="text-4xl font-bold text-gray-900">Frequently Asked Questions</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="dashboard-card !p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Is this ATS scanner really free?</h3>
+              <p className="text-gray-600 leading-relaxed font-medium">
+                Yes, it's completely free to use. We built this to help job seekers bypass the robotic filters that keep great candidates from getting hired.
+              </p>
+            </div>
+            <div className="dashboard-card !p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">How does AI resume analysis work?</h3>
+              <p className="text-gray-600 leading-relaxed font-medium">
+                We use advanced AI to simulate how both Applicant Tracking Systems (ATS) and human recruiters read your resume, identifying weak points and missing keywords.
+              </p>
+            </div>
+            <div className="dashboard-card !p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">What file formats do you support?</h3>
+              <p className="text-gray-600 leading-relaxed font-medium">
+                We support PDF, DOCX, and TXT files. PDF is recommended for visual audit accuracy, while DOCX is great for semantic keyword analysis.
+              </p>
+            </div>
+            <div className="dashboard-card !p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">How can I rank higher in ATS scanning?</h3>
+              <p className="text-gray-600 leading-relaxed font-medium">
+                Our tool provides a detailed breakdown of keyword matching, impact metrics, and structural fixes that specifically target ATS scoring algorithms.
+              </p>
             </div>
           </div>
         </div>

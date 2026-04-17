@@ -1,4 +1,13 @@
 import { type FormEvent, useMemo, useState } from "react";
+import type { Route } from "./+types/upload";
+
+export function meta({ }: Route.MetaArgs) {
+  return [
+    { title: "Upload & Analyze | ATS100 Resume Optimizer" },
+    { name: "description", content: "Upload your resume for a comprehensive AI analysis. Check your ATS score, get visual feedback, and optimize for your next big role." },
+  ];
+}
+
 import Navbar from "~/components/Navbar";
 import FileUploader from "~/components/FileUploader";
 import { usePuterStore } from "~/lib/puter";
