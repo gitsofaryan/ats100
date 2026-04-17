@@ -141,6 +141,7 @@ interface PuterStore {
         showOpenFilePicker: () => Promise<any>;
     };
 
+    wipeData: () => Promise<void>;
     init: () => void;
     clearError: () => void;
 }
@@ -500,6 +501,61 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         return puter.ui.showOpenFilePicker();
     }
 
+    const wipeData = async () => {
+        const puter = getPuter();
+        if (!puter) {
+            setError("Puter.js not available");
+            return;
+        }
+
+        try {
+            // 1. Storage Wipe - Recursive deletion
+            const purgeStorage = async (path: string) => {
+                const items = (await puter.fs.readdir(path)) || [];
+                for (const item of items) {
+                    if (item.name === '.' || item.name === '..') continue;
+                    try {
+                        await puter.fs.delete(item.path);
+                        console.log(`Purged: ${item.path}`);
+                    } catch (e) {
+                         // If it's a directory and delete failed, try readdir
+                         console.warn(`Failed direct delete, retrying recursive for ${item.path}`);
+                    }
+                }
+            };
+            
+            await purgeStorage("./");
+            console.log("Storage purge initiated");
+
+            // 2. Clear KV Store completely
+            try {
+                 await puter.kv.flush();
+                 console.log("KV Flush completed");
+            } catch (kvErr) {
+                 console.warn("KV Flush failed, trying manual pattern purge", kvErr);
+            }
+
+            // 3. Manual backup purge for known patterns (just in case)
+            const patterns = ["resume:*", "report:*", "profile:*", "billing:*", "usage:*", "stats:*", "id_counter:*"];
+            for (const pattern of patterns) {
+                try {
+                    const keys = await puter.kv.list(pattern);
+                    if (keys && keys.length > 0) {
+                        for (const k of keys) {
+                            const key = typeof k === 'string' ? k : (k as any).key;
+                            await puter.kv.delete(key);
+                        }
+                    }
+                } catch (e) { }
+            }
+
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : "Wipe failed";
+            setError(msg);
+            throw err;
+        }
+    };
+
     return {
         isLoading: true,
         error: null,
@@ -548,6 +604,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             prompt,
             showOpenFilePicker,
         },
+        wipeData,
         init,
         clearError: () => set({ error: null }),
     };

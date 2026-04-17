@@ -1,8 +1,8 @@
 export const resumes: Resume[] = [
     {
         id: "1",
-        companyName: "Google",
-        jobTitle: "Frontend Developer",
+        companyName: "Tech Solutions Inc.",
+        jobTitle: "Senior Frontend Engineer",
         imagePath: "/images/resume_01.png",
         resumePath: "/resumes/resume-1.pdf",
         feedback: {
@@ -31,8 +31,8 @@ export const resumes: Resume[] = [
     },
     {
         id: "2",
-        companyName: "Microsoft",
-        jobTitle: "Cloud Engineer",
+        companyName: "Global Cloud Systems",
+        jobTitle: "DevOps Architect",
         imagePath: "/images/resume_02.png",
         resumePath: "/resumes/resume-2.pdf",
         feedback: {
@@ -61,98 +61,8 @@ export const resumes: Resume[] = [
     },
     {
         id: "3",
-        companyName: "Apple",
-        jobTitle: "iOS Developer",
-        imagePath: "/images/resume_03.png",
-        resumePath: "/resumes/resume-3.pdf",
-        feedback: {
-            overallScore: 75,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
-        },
-    },
-    {
-        id: "4",
-        companyName: "Google",
-        jobTitle: "Frontend Developer",
-        imagePath: "/images/resume_01.png",
-        resumePath: "/resumes/resume-1.pdf",
-        feedback: {
-            overallScore: 85,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
-        },
-    },
-    {
-        id: "5",
-        companyName: "Microsoft",
-        jobTitle: "Cloud Engineer",
-        imagePath: "/images/resume_02.png",
-        resumePath: "/resumes/resume-2.pdf",
-        feedback: {
-            overallScore: 55,
-            ATS: {
-                score: 90,
-                tips: [],
-            },
-            toneAndStyle: {
-                score: 90,
-                tips: [],
-            },
-            content: {
-                score: 90,
-                tips: [],
-            },
-            structure: {
-                score: 90,
-                tips: [],
-            },
-            skills: {
-                score: 90,
-                tips: [],
-            },
-        },
-    },
-    {
-        id: "6",
-        companyName: "Apple",
-        jobTitle: "iOS Developer",
+        companyName: "Innovative Apps Ltd.",
+        jobTitle: "Mobile Product Lead",
         imagePath: "/images/resume_03.png",
         resumePath: "/resumes/resume-3.pdf",
         feedback: {
@@ -226,17 +136,34 @@ export const AIResponseFormat = `
     }`;
 
 export const prepareInstructions = ({jobTitle, jobDescription}: { jobTitle: string; jobDescription: string; }) =>
-    `You are an expert in ATS (Applicant Tracking System) and resume analysis.
-      Please analyze and rate this resume the way a modern hiring system and recruiter would.
-      Evaluate ATS compatibility, semantic strength, visual structure, skills clarity, and alignment to the target role.
-      The rating can be low if the resume is weak or badly aligned.
-      Be thorough, honest, and specific. Do not give generic advice.
-      If there is a lot to improve, do not hesitate to give low scores. The purpose is precise feedback that helps the user improve fast.
-      Use the job title and job description to produce more relevant feedback whenever available.
-      The job title is: ${jobTitle}
-      The job description is: ${jobDescription}
-      Provide the feedback using the following format:
+    `You are an elite Senior Hiring Manager and ATS expert. 
+      Analyze the provided resume against the target role: "${jobTitle}"
+      
+      Job Context:
+      ${jobDescription || "Standard industry competency requirements apply."}
+
+      Perform a multi-layered analysis based on these core prompts:
+      
+      1. THE BRUTAL HONEST REVIEW:
+      Pretend you are a senior hiring manager in this industry. Tell the user honestly what's weak, what's missing, and what would make you reject this resume immediately.
+      
+      2. THE ATS OPTIMIZER:
+      Compare the job requirements with the resume and specify exactly which keywords are missing, which skills to highlight, and how to restructure bullet points to pass screening.
+      
+      3. THE BULLET POINT TRANSFORMER:
+      Evaluate bullet points using the formula: Action Verb + Task + Measurable Result. Suggest improvements where data/numbers are missing.
+      
+      4. THE INDUSTRY TONE MATCH:
+      Analyze if the resume summary and skills sound like an industry insider or a generic applicant. Suggest rewrites to sound authentic to the field.
+      
+      5. THE FINAL POLISH:
+      Check for consistency in tense, overused cliches (like 'team player'), and generic phrasing. Recommend specific, powerful language.
+
+      Rating System:
+      Be honest and rigorous. Give low scores for generic or weak content. 
+      The goal is to provide high-signal, specific feedback that drives immediate results.
+
+      Format the entire analysis as a single JSON object matching this structure:
       ${AIResponseFormat}
-      Keep every tip concise, high-signal, and directly tied to a specific improvement.
-      Return the analysis as a JSON object, without any other text and without the backticks.
-      Do not include any other text or comments.`;
+      
+      Return ONLY the JSON object. No markdown backticks, no preamble.`;

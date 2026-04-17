@@ -71,9 +71,9 @@ const Resume = ({ params }: Route.ComponentProps) => {
                 </div>
                 <div className="flex items-center gap-4">
                     {resumeUrl && (
-                         <a 
-                            href={resumeUrl} 
-                            download 
+                        <a
+                            href={resumeUrl}
+                            download
                             className="soft-button"
                         >
                             Download Original
@@ -113,7 +113,7 @@ const Resume = ({ params }: Route.ComponentProps) => {
                                     </div>
                                 )}
                             </div>
-                            
+
                             <div className="px-6 flex flex-col gap-2">
                                 <h3 className="font-bold text-gray-800">Visual Summary</h3>
                                 <p className="text-sm text-gray-500 leading-relaxed">

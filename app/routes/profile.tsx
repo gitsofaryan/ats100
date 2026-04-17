@@ -30,13 +30,12 @@ const StatCard = ({
 );
 
 const Profile = () => {
-    const { auth, kv, fs, ui, puterReady, isLoading } = usePuterStore();
+    const { auth, kv, fs, ui, puterReady, isLoading, wipeData } = usePuterStore();
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loadingResumes, setLoadingResumes] = useState(false);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarUrl, setAvatarUrl] = useState("");
     const [avatarUploading, setAvatarUploading] = useState(false);
-    const [isWiping, setIsWiping] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
@@ -152,62 +151,6 @@ const Profile = () => {
         } finally {
             setAvatarUploading(false);
             if (event.target) event.target.value = "";
-        }
-    };
-
-    const handleWipeData = async () => {
-        const confirmation = await ui.prompt("Wipe All Data?", "Type 'WIPE' to confirm deletion of all resumes and analysis reports. This cannot be undone.");
-
-        if (confirmation === "WIPE") {
-            try {
-                setIsWiping(true);
-                
-                // 1. Delete all storage files
-                const files = (await fs.readDir("./")) || [];
-                for (const file of files) {
-                    try {
-                        await fs.delete(file.path);
-                    } catch (e) {
-                        console.warn(`Failed to delete file ${file.path}:`, e);
-                    }
-                }
-
-                // 2. Clear known app prefixes specifically
-                const patterns = ["resume:*", "profile:*", "billing:*", "usage:*", "stats:*"];
-                for (const pattern of patterns) {
-                    try {
-                        const keys = (await kv.list(pattern)) || [];
-                        for (const key of keys) {
-                            await kv.delete(key);
-                        }
-                    } catch (e) {
-                        console.warn(`Failed to clear pattern ${pattern}:`, e);
-                    }
-                }
-
-                // 3. Global flush for any stray keys
-                try {
-                    await kv.flush();
-                } catch (e) {
-                    console.warn(`KV flush failed:`, e);
-                }
-
-                ui.notify({
-                    title: "System Reset",
-                    text: "All account data has been completely cleared.",
-                    icon: "success"
-                });
-
-                // Force a full reload to clear all memory states
-                setTimeout(() => window.location.assign("/"), 1500);
-            } catch (err) {
-                console.error("Wipe failed:", err);
-                ui.alert("Maintenance Error", "Failed to clear all data. Please try refreshing and trying again.");
-            } finally {
-                setIsWiping(false);
-            }
-        } else if (confirmation) {
-            ui.notify("Wipe canceled. Confirmation code did not match.");
         }
     };
 
@@ -328,16 +271,12 @@ const Profile = () => {
                                 Delete all uploaded resumes, previews, avatars, and saved ATS analysis reports from your Puter account.
                             </p>
                         </div>
-                        <button
-                            onClick={handleWipeData}
-                            disabled={isWiping}
-                            className={cn(
-                                "px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full font-bold transition-colors shadow-lg shadow-red-200",
-                                isWiping && "opacity-50 cursor-not-allowed"
-                            )}
+                        <Link 
+                            to="/wipe"
+                            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full font-bold transition-colors shadow-lg shadow-red-200 text-center whitespace-nowrap"
                         >
-                            {isWiping ? "Wiping Data..." : "Wipe All Data"}
-                        </button>
+                            Wipe All Data
+                        </Link>
                     </div>
                 </div>
             </section>
