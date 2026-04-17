@@ -70,15 +70,12 @@ const Resume = ({ params }: Route.ComponentProps) => {
                     <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Report #{id.slice(0, 8)}</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    {resumeUrl && (
-                        <a
-                            href={resumeUrl}
-                            download
-                            className="soft-button"
-                        >
-                            Download Original
-                        </a>
-                    )}
+                    <Link
+                        to="/upload"
+                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold transition-all shadow-md shadow-indigo-200"
+                    >
+                        Reanalyze Resume
+                    </Link>
                 </div>
             </nav>
 

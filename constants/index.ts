@@ -142,28 +142,30 @@ export const prepareInstructions = ({jobTitle, jobDescription}: { jobTitle: stri
       Job Context:
       ${jobDescription || "Standard industry competency requirements apply."}
 
-      Perform a multi-layered analysis based on these core prompts:
+      Perform a multi-layered analysis based on these core prompts, and map them to the corresponding JSON output sections:
       
-      1. THE BRUTAL HONEST REVIEW:
-      Pretend you are a senior hiring manager in this industry. Tell the user honestly what's weak, what's missing, and what would make you reject this resume immediately.
+      1. THE BRUTAL HONEST REVIEW (Output to "content" section):
+      Pretend you are a senior hiring manager in this industry. Tell the user honestly what's weak, what's missing, and what would make you reject this resume immediately. Score strictly based on content depth.
       
-      2. THE ATS OPTIMIZER:
-      Compare the job requirements with the resume and specify exactly which keywords are missing, which skills to highlight, and how to restructure bullet points to pass screening.
+      2. THE ATS OPTIMIZER (Output to "ATS" section):
+      Compare the job requirements with the resume and specify exactly which keywords are missing, which skills to highlight, and how to restructure bullet points to pass screening. Score strictly based on keyword and matching.
       
-      3. THE BULLET POINT TRANSFORMER:
-      Evaluate bullet points using the formula: Action Verb + Task + Measurable Result. Suggest improvements where data/numbers are missing.
+      3. THE BULLET POINT TRANSFORMER (Output to "structure" section):
+      Rewrite each of my bullet points using the formula: Action Verb + Task + Measurable Result. If numbers are missing, ask for them. Score based on visual structure and layout.
       
-      4. THE INDUSTRY TONE MATCH:
-      Analyze if the resume summary and skills sound like an industry insider or a generic applicant. Suggest rewrites to sound authentic to the field.
+      4. THE INDUSTRY TONE MATCH (Output to "skills" section):
+      Analyze if the resume summary and skills sound like an industry insider or a generic applicant. Suggest rewrites to sound authentic to the field. Score based on role alignment and skills.
       
-      5. THE FINAL POLISH:
-      Check for consistency in tense, overused cliches (like 'team player'), and generic phrasing. Recommend specific, powerful language.
+      5. THE FINAL POLISH (Output to "toneAndStyle" section):
+      Do a final review. Check for: consistency in tense, clichés (like 'team player'), anything that sounds generic. Replace all of it with specific, powerful language. Score based on tone and style.
 
-      Rating System:
-      Be honest and rigorous. Give low scores for generic or weak content. 
-      The goal is to provide high-signal, specific feedback that drives immediate results.
+      CRITICAL SCORING INSTRUCTIONS:
+      - NEVER just output "82" as the default score! You MUST dynamically calculate the "overallScore" based purely on the actual quality of the provided resume. If the resume is terrible, give it a 35. If it is outstanding, give it a 92. Give highly variable, accurate scores.
+      - Each section must also have its own dynamic score (0-100) reflecting that specific category.
+      - Keep explanations EXTREMELY CONCISE. Maximum 1-2 short sentences per tip. Do not ramble.
+      - Provide 3-4 specific, actionable tips per section.
 
-      Format the entire analysis as a single JSON object matching this structure:
+      Format the entire analysis as a single JSON object matching this structure exactly:
       ${AIResponseFormat}
       
-      Return ONLY the JSON object. No markdown backticks, no preamble.`;
+      Return ONLY the valid JSON object. No markdown backticks, no preamble.`;

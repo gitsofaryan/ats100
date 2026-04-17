@@ -28,6 +28,15 @@ const Category = ({ title, score }: { title: string, score: number }) => {
 const Summary = ({ feedback }: { feedback: Feedback }) => {
     const tone = getScoreTone(feedback.overallScore);
 
+    const getBenchmark = (score: number) => {
+        if (score >= 90) return { top: "Top 5%", sentiment: "Authoritative" };
+        if (score >= 80) return { top: "Top 15%", sentiment: "Professional" };
+        if (score >= 70) return { top: "Top 30%", sentiment: "Standard" };
+        return { top: "Top 50%+", sentiment: "Needs Polish" };
+    };
+
+    const metrics = getBenchmark(feedback.overallScore);
+
     return (
         <div className="report-shell">
             <div className="summary-hero !p-8 !rounded-[36px] !bg-white/40 !backdrop-blur-2xl">
@@ -49,17 +58,17 @@ const Summary = ({ feedback }: { feedback: Feedback }) => {
                         </div>
                         <div className="flex flex-wrap gap-3">
                             <div className="rounded-full bg-white/80 border border-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm">
-                                <span className="text-gray-400 mr-2">Benchmarked:</span> Top 15%
+                                <span className="text-gray-400 mr-2">Benchmarked:</span> {metrics.top}
                             </div>
                             <div className="rounded-full bg-white/80 border border-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm">
-                                <span className="text-gray-400 mr-2">Sentiment:</span> Professional
+                                <span className="text-gray-400 mr-2">Sentiment:</span> {metrics.sentiment}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Category title="ATS Readiness" score={feedback.ATS.score} />
                 <Category title="Content Depth" score={feedback.content.score} />
                 <Category title="Visual Structure" score={feedback.structure.score} />
