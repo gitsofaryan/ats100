@@ -398,7 +398,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                     content,
                 },
             ],
-            { model: "gpt-5.4" }
+            { model: "google/gemma-4-26b-a4b-it" }
         ) as Promise<AIResponse | undefined>;
     };
 
